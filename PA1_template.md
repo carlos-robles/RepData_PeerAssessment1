@@ -22,36 +22,165 @@ First, I loaded and preprocessed the data just to look at it and understand what
 
 I also noticed that the NA's of the orginal data frame were only in the "steps" column. The total number of NAs is 2304. I worked with 3 different data frames. The first one was the original data frame, called "data"; the second one, called "datadate", is a dataframe with the "date" column preprocessed. The third dataframe called "dataclean" has all the NA's removed.
 
-```{r echo=TRUE}
+
+```r
 library(lubridate)
+```
+
+```
+## 
+## Attaching package: 'lubridate'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+```
+
+```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:lubridate':
+## 
+##     intersect, setdiff, union
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(gridExtra)
+```
+
+```
+## 
+## Attaching package: 'gridExtra'
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+##     combine
+```
+
+```r
 library(ggplot2)
 
 data <- read.csv("./activity.csv")  ## Read the data
 datadate <- mutate(data, date = ymd(data$date))  ## Change type of class for date
 dataclean <- filter(datadate, !is.na(datadate$steps))  ## Clean data from NA's 
 head(data)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
 head(datadate)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
 head(dataclean)
+```
 
+```
+##   steps       date interval
+## 1     0 2012-10-02        0
+## 2     0 2012-10-02        5
+## 3     0 2012-10-02       10
+## 4     0 2012-10-02       15
+## 5     0 2012-10-02       20
+## 6     0 2012-10-02       25
+```
+
+```r
 print("NAs in steps column: ", quote = FALSE)
+```
+
+```
+## [1] NAs in steps column:
+```
+
+```r
 sum(is.na(datadate$steps))
+```
 
+```
+## [1] 2304
+```
+
+```r
 print("NAs in date column: ", quote = FALSE)
+```
+
+```
+## [1] NAs in date column:
+```
+
+```r
 sum(is.na(datadate$date))
+```
 
+```
+## [1] 0
+```
+
+```r
 print("NAs in interval column: ", quote = FALSE)
+```
+
+```
+## [1] NAs in interval column:
+```
+
+```r
 sum(is.na(datadate$interval))
+```
 
-
+```
+## [1] 0
 ```
 
 
 
 ## What is mean total number of steps taken per day?
 
-```{r echo=TRUE}
+
+```r
 sumsteps <- data.frame()
 for(i in unique(dataclean$date)){
   a <- filter(dataclean, date == i)
@@ -68,22 +197,51 @@ p <- ggplot(sumsteps, aes(x = averageOfStepsperday)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 p
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
+```r
 mean1 <- mean(sumsteps$averageOfStepsperday)
 median1 <- median(sumsteps$averageOfStepsperday)
 
 print("Mean: ", quote = FALSE)
+```
+
+```
+## [1] Mean:
+```
+
+```r
 mean1
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 print("Median: ", quote = FALSE)
+```
+
+```
+## [1] Median:
+```
+
+```r
 median1
 ```
 
-I used a binwidth of 5000 for the plot to be visualy understandable. I've got a mean of __`r mean1`__ and a median of __`r median1`__.
+```
+## [1] 10765
+```
+
+I used a binwidth of 5000 for the plot to be visualy understandable. I've got a mean of __1.0766189\times 10^{4}__ and a median of __10765__.
 
 ## What is the average daily activity pattern?
 
-```{r echo=TRUE}
+
+```r
 dailypat <- data.frame()
 for(i in unique(dataclean$interval)){
   a <- filter(dataclean, interval == i)
@@ -98,23 +256,38 @@ colnames(dailypat) <- c("interval", "AverageSteps")
 ggplot(dailypat, aes(unique(dataclean$interval), AverageSteps)) +
   geom_line() + 
   labs(x = "Intervals", y = "Average steps")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 dailymax <- filter(dailypat, dailypat$AverageSteps == max(dailypat[, "AverageSteps"]))
 
 maxsteps <- dailymax$AverageSteps
 
 print("Interval: ", quote = FALSE)
-interval1 <- dailymax$interval
-interval1
+```
 
 ```
-This is the behaviour of the average steps depending on the intevals of the data frame. The maximum average of steps is `r maxsteps` and are found in the __interval `r interval1`.__
+## [1] Interval:
+```
+
+```r
+interval1 <- dailymax$interval
+interval1
+```
+
+```
+## [1] 835
+```
+This is the behaviour of the average steps depending on the intevals of the data frame. The maximum average of steps is 206.1698113 and are found in the __interval 835.__
 
 
 
 ## Imputing missing values
 
-```{r echo=TRUE}
+
+```r
 ## count number of na's over the days and create a dataframe
 ## with the information
 
@@ -169,36 +342,93 @@ q <- ggplot(sumdatanafill, aes(x = averageOfStepsperday)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 q
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 grid.arrange(p, q, nrow = 1)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-2.png)<!-- -->
+
+```r
 print("Mean: ", quote = FALSE)
+```
+
+```
+## [1] Mean:
+```
+
+```r
 mean(sumdatanafill$averageOfStepsperday)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 print("Median: ", quote = FALSE)
-median(sumdatanafill$averageOfStepsperday)
+```
 
+```
+## [1] Median:
+```
+
+```r
+median(sumdatanafill$averageOfStepsperday)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 difmean <- mean(sumdatanafill$averageOfStepsperday) - mean1
 difmedian <- median(sumdatanafill$averageOfStepsperday) - median1
 
 
 print("Difference between mean of data with NAs removed and data with NAs imputed: ", quote = FALSE)
+```
+
+```
+## [1] Difference between mean of data with NAs removed and data with NAs imputed:
+```
+
+```r
 difmean
+```
 
+```
+## [1] 0
+```
+
+```r
 print("Difference between median of data with NAs removed and data with NAs imputed: ", quote = FALSE)
+```
+
+```
+## [1] Difference between median of data with NAs removed and data with NAs imputed:
+```
+
+```r
 difmedian
+```
 
-
+```
+## [1] 1.188679
 ```
 Here I'm printing a plot comparing the dataframe where the NAs where removed and the NAs being imputed. We can observe that there is a difference between the two plots. However, the difference between them is minimum.
 
-We can watch that the __difference between means is `r difmean`.__
-There is a minimum change in the median of the dataframes, giving a difference of __`r difmedian`.__
+We can watch that the __difference between means is 0.__
+There is a minimum change in the median of the dataframes, giving a difference of __1.1886792.__
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r echo=TRUE}
+
+```r
 ## Add a column with factor telling if the day is a weekday or a weekend day.
 
 dataweeks <- data.frame()
@@ -288,3 +518,5 @@ s <- ggplot(weekendpat, aes(unique(dataweekends$interval), AverageSteps)) +
 
 grid.arrange(r, s, nrow = 2)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
